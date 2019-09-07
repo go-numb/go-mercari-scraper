@@ -79,6 +79,7 @@ func input() {
 	scanner := bufio.NewScanner(os.Stdin)
 	for scanner.Scan() {
 		GetItemData(scanner.Text())
+		io.WriteString(os.Stdout, "検索ワード: ")
 	}
 }
 
@@ -106,10 +107,6 @@ func GetItemData(keyword string) {
 		inner := s.Find("a")
 		url, isThere := inner.Attr("href")
 		if !isThere {
-			return false
-		}
-
-		if i > 3 {
 			return false
 		}
 
