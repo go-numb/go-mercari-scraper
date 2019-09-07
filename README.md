@@ -4,7 +4,7 @@
 
 go-mercari-scraper is scrape MERCARI.
 
-![save JSON](https://github.com/go-numb/go-mercari-scraper/img/data.png)
+![save JSON](https://github.com/go-numb/go-mercari-scraper/blob/master/img/data.png)
 
 ## Installation
 
