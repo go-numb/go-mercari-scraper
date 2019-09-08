@@ -64,6 +64,10 @@ type Output struct {
 const (
 	DIR        = "./nosql/"
 	MERCARIURL = "https://www.mercari.com/jp/search/?keyword="
+
+	// url query page=n の設定
+	// 100ページで120productsほど
+	MAXPAGE = 100
 )
 
 func init() {
@@ -97,22 +101,33 @@ func save(b []byte) error {
 func GetItemData(keyword string) {
 	var data []Output
 
-	url := MERCARIURL + keyword
-	doc, _ := goquery.NewDocument(url)
+	for i := 1; ; i++ {
+		url := MERCARIURL + keyword + fmt.Sprintf("&page=%d", i)
+		doc, _ := goquery.NewDocument(url)
 
-	// sections of items on the mercari
-	selector := "body > div.default-container > main > div.l-content > section > div.items-box-content.clearfix > section.items-box"
-	doc.Find(selector).EachWithBreak(func(i int, s *goquery.Selection) bool {
-		// Get item detail page url
-		inner := s.Find("a")
-		url, isThere := inner.Attr("href")
-		if !isThere {
-			return false
+		// 検索商品が見つからない状態まで検索する
+		isNotThereText := doc.Find("body > div.default-container.container-custom-banner > main > div.l-content > section > section > p").Text()
+		if isNotThereText != "" {
+			break
 		}
 
-		data = append(data, GetItemDetail(url))
-		return true
-	})
+		// sections of items on the mercari
+		selector := "body > div.default-container > main > div.l-content > section > div.items-box-content.clearfix > section.items-box"
+		doc.Find(selector).EachWithBreak(func(i int, s *goquery.Selection) bool {
+			// Get item detail page url
+			inner := s.Find("a")
+			url, isThere := inner.Attr("href")
+			if !isThere {
+				return false
+			}
+
+			data = append(data, GetItemDetail(url))
+			log.Debugf("%d: %+v\n", len(data), data[len(data)-1].Item.Name)
+			return true
+		})
+
+		time.Sleep(time.Second)
+	}
 
 	jstring, _ := json.Marshal(data)
 	// jstring, _ := json.MarshalIndent(data, "", " ")
