@@ -66,7 +66,7 @@ const (
 	MERCARIURL = "https://www.mercari.com/jp/search/?keyword="
 
 	// url query page=n の設定
-	// 100ページで120productsほど
+	// 1ページで120productsほど
 	MAXPAGE = 100
 )
 
