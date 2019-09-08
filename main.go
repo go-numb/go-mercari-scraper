@@ -101,7 +101,7 @@ func save(b []byte) error {
 func GetItemData(keyword string) {
 	var data []Output
 
-	for i := 1; ; i++ {
+	for i := 1; i < MAXPAGE; i++ {
 		url := MERCARIURL + keyword + fmt.Sprintf("&page=%d", i)
 		doc, _ := goquery.NewDocument(url)
 
@@ -122,7 +122,7 @@ func GetItemData(keyword string) {
 			}
 
 			data = append(data, GetItemDetail(url))
-			log.Debugf("%d: %+v\n", len(data), data[len(data)-1].Item.Name)
+			log.Debugf("this page num: %d, products: %d: %+v\n", i, len(data), data[len(data)-1].Item.Name)
 			return true
 		})
 
